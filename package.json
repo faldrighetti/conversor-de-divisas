@@ -1,0 +1,24 @@
+{
+  "name": "conversor-de-divisas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "conversor.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/faldrighetti/conversor-de-divisas.git"
+  },
+  "author": "Federico Aldrighetti",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/faldrighetti/conversor-de-divisas/issues"
+  },
+  "homepage": "https://github.com/faldrighetti/conversor-de-divisas#readme",
+  "devDependencies": {
+    "bootstrap": "^5.2.3",
+    "cypress": "^12.10.0",
+    "jquery": "^3.6.4"
+  }
+}
