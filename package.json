@@ -4,7 +4,11 @@
   "description": "",
   "main": "conversor.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "empezar": "http-server",
+    "cypress-run": "cypress run",
+    "cypress-dev": "cypress open",
+    "test-dev": "run-p start cypress-dev"
   },
   "repository": {
     "type": "git",
