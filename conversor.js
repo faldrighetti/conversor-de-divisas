@@ -8,15 +8,15 @@ const $botonCalcular = document.querySelector('#boton-calcular');
 const resultado = $("#resultado");
 
 function tomarDatos(){
-    const $divisaBase = divisaBase.text();//MAL: No tiene que tomar el texto del campo divisa base porque es el select,
-    //tiene que tomar el texto de la option elegida. Lo mismo para divisa solicitada.
-    const $cantidad = cantidad.text();
-    const $dia = dia.text();
-    const $mes = mes.text();
-    const $anio = anio.text();
-    const $divisaSolicitada = divisaSolicitada.text();
+    const $divisaBase = divisaBase.val();
+    const $cantidad = Number(cantidad.val());
+    const $dia = dia.val();
+    const $mes = mes.val();
+    const $anio = anio.val();
+    const fecha = `${$anio}-${$mes}-${$dia}`;
+    const $divisaSolicitada = divisaSolicitada.val();
 
-    return [$divisaBase, $cantidad, $dia, $mes, $anio, $divisaSolicitada];
+    return [$divisaBase, $cantidad, fecha, $divisaSolicitada];
 }
 
 fetch("https://api.exchangerate.host/latest")
@@ -24,39 +24,36 @@ fetch("https://api.exchangerate.host/latest")
     .then(respuestaJSON => {
         Object.keys(respuestaJSON.rates).forEach(moneda => {
             divisaBase.append(`<option>${moneda}</option>`)
-            divisaSolicitada.append(`<option>${moneda}</option>`) //ESTO ESTÁ MAL, DA TODAS LAS DIVISAS JUNTAS
-            //AEDAFNALLAMD, etc. Tengo que encontrar la manera de que den textos diferentes según la opción elegida.
+            divisaSolicitada.append(`<option>${moneda}</option>`) 
         })
     })    
     .catch(error => console.error('ERROR: ', error));
 
 $botonCalcular.onclick = function(){
-    console.log(tomarDatos())
+    if(dia.val() !== '' && mes.val() !== '' && anio.val() !== ''){
+        convertirDivisaDesdeFecha()
+    }
+
     return false;
 }
 
 function convertirDivisaDesdeFecha(){
+    const divisaBase = tomarDatos()[0];
+    const cantidad = tomarDatos()[1];
+    const fechaIngresada = tomarDatos()[2];
+    const divisaSolicitada = tomarDatos()[3];
 
-    //'https://api.exchangerate.host/2020-04-04'
-    //fetch(`https://api.exchangerate.host/${anio}-${mes}-${dia})`
-    fetch("https://api.exchangerate.host/latest")
+    fetch(`https://api.exchangerate.host/${fechaIngresada}?base=${divisaBase}`)
     .then(respuesta => respuesta.json())
-    .then(respuesta => console.log(respuesta))
+    .then(respuesta => {
+        const ratio = respuesta.rates[`${divisaSolicitada}`];
+        resultado.text(`Convertir ${cantidad} ${divisaBase} a ${divisaSolicitada} da como resultado ${(ratio * cantidad).toFixed(2)} ${divisaSolicitada}`);
+        })
     .catch(error => console.error('ERROR: ', error));
-    //Acá tomar las divisas y multiplicar la cantidad por el rate
-    //return cantidad
-}
 
-function convertirDivisaActual(){
-    //Chequear que los campos de fecha estén vacíos para ejecutar esta función.
-    //https://api.exchangerate.host/convert?from=USD&to=EUR'
-    //amount=1200
-    fetch(`https://api.exchangerate.host/convert?from=${divisaBase}&to=${divisaSolicitada}`)
-    .then(respuesta => respuesta.json())
-    .then(respuesta => console.log(respuesta))
-    .catch(error => console.error('ERROR: ', error));
-    //Acá tomar las divisas y multiplicar la cantidad por el rate
-    //return cantidad
+    //Si ningún input está vacío, que siga el código de arriba
+    //Si todos están vacíos, que tome el latest.
+    //Si uno o dos están vacíos, que dé mensaje de error.
 }
 
 //TODO: codear funciones de conversión
