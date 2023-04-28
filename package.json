@@ -23,6 +23,7 @@
   "devDependencies": {
     "bootstrap": "^5.2.3",
     "cypress": "^12.10.0",
+    "http-server": "^14.1.1",
     "jquery": "^3.6.4"
   }
 }

@@ -5,28 +5,24 @@
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <title>Conversor de divisas</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
 </head>
 <body class="p-3 mb-2 bg-primary text-white">
     <h1>Conversor de divisas</h1>
 
     <form>
-
-    <label class="col-sm-2 col-form-label">Divisa a convertir</label>
-    <select type="text" id="divisa-base"></select>
-    <br>
-    <label class="col-sm-2 col-form-label">Cantidad</label><input class="col-sm-1" type="number" id="cantidad">
-    <br>
-
-    <label class="col-sm-2 col-form-label">Ingrese fecha</label>
-    <input class="col-sm-1" type="number" placeholder="día" id="dia">
-    <input class="col-sm-1" type="number" placeholder="mes" id="mes">
-    <input class="col-sm-1" type="number" placeholder="año" id="anio">
-    <br>
-    <label class="col-sm-2 col-form-label">Convertir a</label>
-    <select type="text" id="divisa-solicitada"></select>
-
+        <label class="col-sm-2 col-form-label">Divisa a convertir</label>
+        <select type="text" id="divisa-base"></select>
+        <br>
+        <label class="col-sm-2 col-form-label">Cantidad</label><input class="col-sm-1" type="number" id="cantidad">
+        <br>
+        <label class="col-sm-2 col-form-label">Fecha</label>
+        <input class="col-sm-1" type="number" placeholder="día" id="dia">
+        <input class="col-sm-1" type="number" placeholder="mes" id="mes">
+        <input class="col-sm-1" type="number" placeholder="año" id="anio">
+        <br>
+        <label class="col-sm-2 col-form-label">Convertir a</label>
+        <select type="text" id="divisa-solicitada"></select>
     </form>
     <br>
     <button class="btn btn-light" id="boton-calcular">Calcular</button>
