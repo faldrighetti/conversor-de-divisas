@@ -87,7 +87,6 @@ function convertirDivisa(){
     const fechaIngresada = procesarFecha()[1];
 
     let linkFetch;
-
     
     if($('input[name="fecha"]:checked').val() == 'Fecha actual'){
         linkFetch = fetch("https://api.exchangerate.host/latest");
@@ -113,6 +112,3 @@ function convertirDivisa(){
         .catch(error => console.error('ERROR: ', error));
     }
 }
-
-//TESTEAR: El caso feliz
-//Que la cantidad sea un número mayor a cero
