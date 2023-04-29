@@ -3,6 +3,7 @@ const cantidad = $("#cantidad");
 const dia = $("#dia");
 const mes = $("#mes");
 const anio = $("#anio");
+const fechaSeleccionada = $("#fecha-seleccionada");
 const divisaSolicitada = $("#divisa-solicitada");
 const $botonCalcular = document.querySelector('#boton-calcular');
 const resultado = $("#resultado");
@@ -14,82 +15,92 @@ fetch("https://api.exchangerate.host/latest")
             divisaBase.append(`<option>${moneda}</option>`);
             divisaSolicitada.append(`<option>${moneda}</option>`);
         })
-    })    
+    })
     .catch(error => console.error('ERROR: ', error));
+
+for(let i = 2023; i >= 1999; i--){
+    anio.append(`<option>${i}</option>`);
+}
+
+for (let i = 1; i <= 12; i++){
+    if(i < 10){
+        mes.append(`<option>0${i}</option>`);
+    } else{
+        mes.append(`<option>${i}</option>`);
+    }
+}
+
+for (let i = 1; i <= 31; i++){
+    if(i < 10){
+        dia.append(`<option>0${i}</option>`);
+    } else{
+        dia.append(`<option>${i}</option>`);
+    }
+}
 
 function procesarMonedas(){
     const $divisaBase = divisaBase.val();
     const $cantidad = Number(cantidad.val());
     const $divisaSolicitada = divisaSolicitada.val();
+    let validezCantidad = true;
 
-    return [$divisaBase, $cantidad, $divisaSolicitada];
-}
-
-function validarInputs(){
-    const $dia = dia.val();
-    const $mes = mes.val();
-    const $anio = anio.val();
-    let FINAL_MES;
-
-    let diaValido = false;
-    let mesValido = false;
-    let anioValido = false;
-
-    if($anio >= 1999 && $anio <= 2023){
-        anioValido = true;
+    if($cantidad < 1){
+        validezCantidad = false;
+        resultado.text('La cantidad debe ser mayor a cero');
     }
 
-    if($mes > 0 && $mes < 13){
-        mesValido = true;
-        if($mes == "1" || $mes == "3" || $mes == "5" || $mes == "7" || $mes == "8" || $mes == "10" || $mes == "12"){
-            FINAL_MES = 31;
-        }
-        else if($mes == "4" || $mes == "6" || $mes == "9" || $mes == "11"){
-            FINAL_MES = 30;
-        }
-        else if($mes == "2" && $anio % 4 === 0){
-            FINAL_MES = 29;
-        } else{
-            FINAL_MES = 28;
-        }
-    };
-
-    if($dia > 0 && $dia < FINAL_MES){
-        diaValido = true;
-    }
-    console.log(diaValido, mesValido, anioValido);
-    return diaValido && mesValido && anioValido;
+    return [$divisaBase, $divisaSolicitada, $cantidad, validezCantidad];
 }
 
 function procesarFecha(){
     const $dia = dia.val();
     const $mes = mes.val();
     const $anio = anio.val();
-    let fecha = false;
+    let validezFecha = false;
+    let fecha;
+    
+    const fechaInicio = new Date('1999-02-01');
+    const fechaActual = new Date();
+    const fechaIngresada = new Date(`${$anio}-${$mes}-${$dia}`);
 
-    if(validarInputs()){
-        fecha = `${$anio}-${$mes}-${$dia}`;
-    } else if(!$dia && !$mes && !$anio){
-        fecha = 'latest';
+    if(fechaIngresada <= fechaActual && fechaIngresada >= fechaInicio){
+        validezFecha = true;
+        fecha = `${$anio}-${$mes}-${$dia}`
     } else{
         resultado.text("La fecha ingresada no es válida");
     }
-    return fecha;
+    return [validezFecha, fecha];
 }
 
 $botonCalcular.onclick = function(){
-    convertirDivisaDesdeFecha();
+    convertirDivisa();
     return false;
 }
 
-function convertirDivisaDesdeFecha(){
+function convertirDivisa(){
     const divisaBase = procesarMonedas()[0];
-    const cantidad = procesarMonedas()[1];
-    const divisaSolicitada = procesarMonedas()[2];
-    const fechaIngresada = procesarFecha();
+    const divisaSolicitada = procesarMonedas()[1];
+    const cantidad = procesarMonedas()[2];
+    const cantidadValida = procesarMonedas()[3];
 
-    if(fechaIngresada && cantidad){
-        fetch(`https://api.exchangerate.host/${fechaIngresada}?base=${divisaBase}`)
+    const fechaValida = procesarFecha()[0];
+    const fechaIngresada = procesarFecha()[1];
+
+    let linkFetch;
+
+    
+    if($('input[name="fecha"]:checked').val() == 'Fecha actual'){
+        linkFetch = fetch("https://api.exchangerate.host/latest");
+    }
+    else if ($('input[name="fecha"]:checked').val() == 'Seleccionar fecha'){
+        linkFetch =  fetch(`https://api.exchangerate.host/${fechaIngresada}?base=${divisaBase}`)
+    }
+    else{
+        resultado.text("Por favor seleccione una opción para la fecha de conversión.");
+    }
+
+    if(fechaValida && cantidadValida){
+        linkFetch
         .then(respuesta => respuesta.json())
         .then(respuestaJSON => {
             const ratio = respuestaJSON.rates[`${divisaSolicitada}`];
@@ -100,16 +111,8 @@ function convertirDivisaDesdeFecha(){
             }
         })
         .catch(error => console.error('ERROR: ', error));
-    } else if(!cantidad){
-        resultado.text("Tiene que ingresar una cantidad");
     }
 }
-
-//Dar error para cuando haya uno o dos campos vacíos. En ese caso tengo que mostrar mensaje de error hasta
-//que se ingrese una fecha válida.
-//Bug: no funciona cuando ingreso fechas de una cifra. Interpreta 05/04/2019 pero se buguea con 5/4/2019
-//Idea: hacer un select para las fechas, así queda más limpio y seguro.
-//Ver comandos para poder ejecutar http-server y así poder empezar a usar Cypress.
 
 //TESTEAR: El caso feliz
 //Que la cantidad sea un número mayor a cero
