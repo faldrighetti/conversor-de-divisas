@@ -12,7 +12,7 @@ describe('Conversor de monedas', () => {
 
   it('Se asegura de que la fecha no sea posterior a la actual', () => {
     let $dia, $mes, $anio;
-    cy.get('#boton-calcular').click();
+
     cy.get("#dia").then((dia) => {
       $dia = dia.val();
     })
@@ -26,7 +26,8 @@ describe('Conversor de monedas', () => {
     const fechaInicio = new Date('1999-02-01');
     const fechaActual = new Date();
     const fechaIngresada = new Date(`${$anio}-${$mes}-${$dia}`);
-
+    
+    cy.get('#boton-calcular').click();
     if(fechaIngresada > fechaActual || fechaIngresada < fechaInicio){
       cy.get('#resultado').should('have.text',"La fecha ingresada no es válida");
     }
